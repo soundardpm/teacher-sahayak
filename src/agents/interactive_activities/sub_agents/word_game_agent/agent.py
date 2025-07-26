@@ -12,6 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Interactive quiz creator sub-agent module."""
+"""word_game_agent for generating word games based on academic topics."""
 
-from .agent import interactive_quiz_creator_agent
+from google.adk import Agent
+from google.adk.tools import google_search
+
+from . import prompt
+
+MODEL = "gemini-2.5-flash"
+
+word_game_agent = Agent(
+    model=MODEL,
+    name="word_game_agent",
+    description=(
+        "An expert word game creator for students in Grades 6-10. "
+        "Creates educational word games based on provided topics and returns clean HTML content."
+    ),
+    instruction=prompt.ACADEMIC_WORD_GAME_GENERATOR_PROMPT,
+    tools=[google_search],
+)
+

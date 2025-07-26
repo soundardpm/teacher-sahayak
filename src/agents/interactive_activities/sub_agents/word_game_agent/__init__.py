@@ -12,6 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Game builder sub-agent module."""
+"""word_game_agent for finding research papers using search tools."""
 
-from .agent import game_builder_agent
+from .agent import word_game_agent

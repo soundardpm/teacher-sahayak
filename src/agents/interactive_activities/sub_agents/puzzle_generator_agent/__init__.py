@@ -12,16 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Group activity designer sub-agent for creating collaborative learning activities."""
+"""Academic_websearch_agent for finding research papers using search tools."""
 
-from google.adk import Agent
-
-from . import prompt
-
-MODEL = "gemini-2.5-flash"
-
-group_activity_designer_agent = Agent(
-    model=MODEL,
-    name="group_activity_designer_agent",
-    instruction=prompt.GROUP_ACTIVITY_DESIGNER_PROMPT,
-)
+from .agent import puzzle_generator_agent

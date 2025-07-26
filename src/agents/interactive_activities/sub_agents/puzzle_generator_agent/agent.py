@@ -12,21 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""quiz_generator_agent for generating quizzes based on academic topics."""
+"""puzzle_generator_agent for generating puzzles based on academic topics."""
 
 from google.adk import Agent
+from google.adk.tools import google_search
 
 from . import prompt
 
 MODEL = "gemini-2.5-flash"
 
-quiz_generator_agent = Agent(
+puzzle_generator_agent = Agent(
     model=MODEL,
-    name="quiz_generator_agent",
+    name="puzzle_generator_agent",
     description=(
-        "An expert quiz creator for students in Grades 6-10. "
-        "Creates educational quizzes based on provided topics and returns clean HTML content."
+        "An expert puzzle creator for students in Grades 6-10. "
+        "Creates educational puzzles based on provided topics and returns clean HTML content."
     ),
     instruction=prompt.ACADEMIC_QUIZ_GENERATOR_PROMPT,
+    tools=[google_search],
 )
 
