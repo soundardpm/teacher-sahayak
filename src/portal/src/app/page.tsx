@@ -22,7 +22,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
           <div className="flex items-center space-x-3">
             <Image 
-              src="/logo.jpeg" 
+              src="/logo.png" 
               alt="Sahayak AI Logo" 
               width={40} 
               height={40} 
