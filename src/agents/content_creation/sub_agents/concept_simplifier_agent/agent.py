@@ -23,5 +23,9 @@ MODEL = "gemini-2.5-flash"
 concept_simplifier_agent = Agent(
     model=MODEL,
     name="concept_simplifier_agent",
+    description=(
+        "The ConceptSimplifierAgent transforms complex ideas into age-appropriate explanations. "
+        "It simplifies concepts for better understanding, making it suitable for educational contexts where clarity is essential."
+    ),
     instruction=prompt.CONCEPT_SIMPLIFIER_PROMPT,
 )

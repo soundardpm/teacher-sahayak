@@ -23,5 +23,10 @@ MODEL = "gemini-2.5-flash"
 story_generator_agent = Agent(
     model=MODEL,
     name="story_generator_agent",
+    description=(
+        "The StoryGeneratorAgent creates culturally relevant stories in regional languages. "
+        "It generates engaging narratives that resonate with local cultures and traditions, "
+        "making it suitable for educational and entertainment purposes."
+    ),
     instruction=prompt.STORY_GENERATOR_PROMPT,
 )

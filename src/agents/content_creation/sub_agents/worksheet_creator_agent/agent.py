@@ -15,6 +15,7 @@
 """Worksheet creator sub-agent for generating differentiated worksheets from textbook pages."""
 
 from google.adk import Agent
+from google.adk.tools import google_search
 
 from . import prompt
 
@@ -23,5 +24,11 @@ MODEL = "gemini-2.5-flash"
 worksheet_creator_agent = Agent(
     model=MODEL,
     name="worksheet_creator_agent",
+    description=(
+        "The WorksheetCreatorAgent generates differentiated worksheets based on textbook pages. "
+        "It analyzes the content, identifies key concepts, and creates engaging exercises tailored to various learning levels. "
+        "This agent is designed to assist educators in creating customized worksheets that enhance student understanding and retention."
+    ),    
     instruction=prompt.WORKSHEET_CREATOR_PROMPT,
+    tools=[google_search],
 )
