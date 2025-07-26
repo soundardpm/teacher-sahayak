@@ -1,0 +1,14 @@
+
+export GOOGLE_CLOUD_PROJECT=aasiriyar-ai
+export GOOGLE_CLOUD_LOCATION=us-central1 
+export GOOGLE_GENAI_USE_VERTEXAI=True
+
+gcloud run deploy capital-agent-service \
+--source . \
+--region $GOOGLE_CLOUD_LOCATION \
+--allow-unauthenticated \
+--set-env-vars="GOOGLE_CLOUD_PROJECT=$GOOGLE_CLOUD_PROJECT,GOOGLE_CLOUD_LOCATION=$GOOGLE_CLOUD_LOCATION,GOOGLE_GENAI_USE_VERTEXAI=$GOOGLE_GENAI_USE_VERTEXAI"
+
+
+
+gcloud run deploy quiz-agent-service --source . --region $GOOGLE_CLOUD_LOCATION --project $GOOGLE_CLOUD_PROJECT --allow-unauthenticated --set-env-vars="GOOGLE_CLOUD_PROJECT=$GOOGLE_CLOUD_PROJECT,GOOGLE_CLOUD_LOCATION=$GOOGLE_CLOUD_LOCATION,GOOGLE_GENAI_USE_VERTEXAI=$GOOGLE_GENAI_USE_VERTEXAI"

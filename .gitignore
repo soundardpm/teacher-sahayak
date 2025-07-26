@@ -1,0 +1,371 @@
+# ========================================
+# Python
+# ========================================
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+.env
+.venv
+*.egg-info/
+*.egg
+dist/
+build/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# mypy
+.mypy_cache/
+.dmypy.json
+
+# Pyre
+.pyre/
+
+# Poetry
+poetry.lock
+
+# ========================================
+# Node.js & JavaScript/TypeScript
+# ========================================
+
+sessions.db
+# Dependencies
+src/backend/node_modules/
+src/frontend/node_modules/
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+.pnpm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Grunt intermediate storage
+.grunt
+
+# Bower dependency directory
+bower_components
+
+# node-waf configuration
+.lock-wscript
+
+# Compiled binary addons
+build/Release
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# parcel-bundler cache
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+out/
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Gatsby files
+.cache/
+public
+
+# Storybook build outputs
+.out
+.storybook-out
+
+# ========================================
+# JavaScript/TypeScript Specific
+# ========================================
+
+# TypeScript compiled output
+*.js.map
+*.d.ts
+*.d.ts.map
+lib/
+lib-cov/
+
+# Rollup.js build output
+dist/
+.rollup.cache/
+
+# Webpack build output
+webpack-stats.json
+.webpack/
+
+# Vite build output
+dist/
+.vite/
+
+# SvelteKit build output
+.svelte-kit/
+
+# Angular
+.angular/
+.ng_build/
+.ng_pkg_build/
+
+# React Native
+.expo/
+.expo-shared/
+
+# Jest
+.jest/
+
+# Mocha
+.mocha.opts
+
+# Cypress
+cypress/videos/
+cypress/screenshots/
+cypress/downloads/
+
+# Playwright
+test-results/
+playwright-report/
+playwright/.cache/
+
+# ESLint
+.eslintcache
+
+# Prettier
+.prettiercache
+
+# Stylelint
+.stylelintcache
+
+# Babel
+.babel_cache/
+
+# PostCSS
+.postcssrc
+
+# Turborepo
+.turbo/
+
+# Vercel
+.vercel
+
+# Serverless Framework
+.serverless/
+
+# FuseBox
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# Temporary folders
+tmp/
+temp/
+
+# ========================================
+# Cloud & API Keys
+# ========================================
+
+# Google Cloud Service Account Keys
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# AWS
+.aws/
+
+# Azure
+.azure/
+
+# ========================================
+# IDEs and Editors
+# ========================================
+
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+.vim/
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ========================================
+# Operating System
+# ========================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+
+# ========================================
+# Logs and Temporary Files
+# ========================================
+
+# Logs
+*.log
+*.out
+*.err
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.old
+*.orig
+*.rej
+
+# ========================================
+# Documentation and Assets
+# ========================================
+
+# Draw.io backup files
+*.drawio.bak
+
+# Generated documentation (keep source docs)
+# Uncomment if you have generated docs
+# docs/build/
+# docs/_build/
+
+# ========================================
+# Project Specific
+# ========================================
+
+# Generated HTML mockups/demos (uncomment if these are generated)
+# sahayak_mockup.html
+# sahayak_deck.html
+
+# Deployment artifacts
+deployment/test_deployment.pyc
+eval/data/*.test.json
+
+# Model files (if large)
+*.pkl
+*.model
+*.h5
+*.pb
+
+# Data files (uncomment if you have large datasets)
+# data/
+# datasets/
+# *.csv
+# *.xlsx
+
+# Build outputs
+build/
+dist/

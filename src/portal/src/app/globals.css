@@ -1,0 +1,241 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 208 56% 46%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 215.4 16.3% 46.9%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 208 56% 46%;
+    --radius: 0.75rem;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222.2 84% 4.9%;
+    --sidebar-primary: 208 56% 46%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 210 40% 96.1%;
+    --sidebar-accent-foreground: 222.2 47.4% 11.2%;
+    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-ring: 208 56% 46%;
+    
+    /* Sahayak AI specific colors */
+    --sahayak-primary: 208 56% 46%; /* #386890 */
+    --sahayak-secondary: 207 47% 26%; /* #152736 */
+    --sahayak-accent: 0 0% 85%; /* #D9D9DA */
+    --sahayak-gray-bg: 0 0% 95%; /* #F2F2F2 */
+  }
+
+  .dark {
+    --background: 207 47% 26%;
+    --foreground: 210 40% 98%;
+    --card: 207 47% 26%;
+    --card-foreground: 210 40% 98%;
+    --popover: 207 47% 26%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 208 56% 46%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 208 56% 46%;
+    --radius: 0.75rem;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --sidebar-background: 207 47% 26%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 208 56% 46%;
+    --sidebar-primary-foreground: 222.2 47.4% 11.2%;
+    --sidebar-accent: 217.2 32.6% 17.5%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217.2 32.6% 17.5%;
+    --sidebar-ring: 208 56% 46%;
+    
+    /* Sahayak AI specific dark colors */
+    --sahayak-primary: 208 56% 46%; /* #386890 */
+    --sahayak-secondary: 207 47% 26%; /* #152736 */
+    --sahayak-accent: 0 0% 70%; /* Lighter gray for dark mode */
+    --sahayak-gray-bg: 217.2 32.6% 17.5%; /* Dark gray background */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .cursor-follower-element {
+    @apply pointer-events-none fixed left-0 top-0 z-[100] h-96 w-96 rounded-full opacity-0 transition-opacity duration-300;
+    background: radial-gradient(
+      circle,
+      hsl(var(--primary) / 0.1) 0%,
+      transparent 70%
+    );
+    filter: blur(20px);
+    will-change: transform;
+  }
+
+  body:hover .cursor-follower-element {
+    @apply opacity-100;
+  }
+
+  .dark .cursor-follower-element {
+     background: radial-gradient(
+      circle,
+      hsl(var(--primary) / 0.2) 0%,
+      transparent 60%
+    );
+    filter: blur(40px);
+  }
+
+  /* Sahayak AI Gradient Background */
+  .gradient-bg {
+    background: linear-gradient(135deg, hsl(var(--sahayak-primary)) 0%, hsl(var(--sahayak-secondary)) 100%);
+  }
+
+  .dark .gradient-bg {
+    background: linear-gradient(135deg, hsl(var(--sahayak-secondary)) 0%, hsl(var(--background)) 100%);
+  }
+
+  /* Sahayak AI Button Styles */
+  .sahayak-button {
+    background-color: hsl(var(--sahayak-secondary));
+    color: white;
+    font-weight: 600;
+    padding: 1rem 1.5rem;
+    border-radius: 0.75rem;
+    width: 100%;
+    transition: all 0.2s ease;
+  }
+
+  .sahayak-button:hover {
+    background-color: hsl(var(--sahayak-primary));
+    transform: scale(1.02);
+  }
+
+  .sahayak-button-secondary {
+    background-color: hsl(var(--sahayak-accent));
+    color: hsl(var(--foreground));
+    font-weight: 600;
+    padding: 1rem 1.5rem;
+    border-radius: 0.75rem;
+    width: 100%;
+    transition: all 0.2s ease;
+  }
+
+  .sahayak-button-secondary:hover {
+    background-color: hsl(var(--sahayak-accent) / 0.8);
+    transform: scale(1.02);
+  }
+
+  /* Sidebar Item Styling */
+  .sidebar-item {
+    transition: all 0.2s ease;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .sidebar-item:hover {
+    background: hsl(var(--accent));
+    transform: translateX(4px);
+  }
+
+  .sidebar-item.active {
+    background: hsl(var(--primary) / 0.1);
+    border-left: 3px solid hsl(var(--primary));
+    color: hsl(var(--primary));
+  }
+
+  /* Card with Sahayak styling */
+  .sahayak-card {
+    background-color: hsl(var(--sahayak-gray-bg));
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+
+  .dark .sahayak-card {
+    background-color: hsl(var(--sahayak-gray-bg));
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Quiz Content Styling */
+  .quiz-content {
+    @apply max-w-none;
+    line-height: 1.6;
+  }
+  
+  .quiz-content ol {
+    @apply pl-0;
+    counter-reset: question;
+    list-style: none;
+  }
+  
+  .quiz-content li {
+    @apply bg-gray-50 border border-gray-200 rounded-lg mb-5 p-5 relative;
+    counter-increment: question;
+    list-style: none;
+  }
+  
+  .quiz-content li::before {
+    @apply block mb-3 font-semibold text-gray-700;
+    content: "Question " counter(question) ": ";
+  }
+  
+  .quiz-content strong {
+    @apply text-gray-700 font-semibold;
+  }
+  
+  .quiz-content br {
+    @apply mb-2;
+  }
+
+  .dark .quiz-content li {
+    @apply bg-gray-800 border-gray-700;
+  }
+
+  .dark .quiz-content li::before {
+    @apply text-gray-300;
+  }
+
+  .dark .quiz-content strong {
+    @apply text-gray-300;
+  }
+}
