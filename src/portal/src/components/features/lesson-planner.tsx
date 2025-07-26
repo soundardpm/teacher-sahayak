@@ -276,7 +276,7 @@ The final validated lesson plan will include:
               <Textarea
                 value={specialRequirements}
                 onChange={(e) => setSpecialRequirements(e.target.value)}
-                placeholder="Any specific learning objectives, student needs, available resources, or teaching methods you'd like to emphasize..."
+                placeholder="Generate a weekly lesson plan for 6th grade science lesson 2 ..."
                 className="w-full p-5 text-lg border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all min-h-[120px] resize-y"
                 rows={6}
               />
