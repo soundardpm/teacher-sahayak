@@ -33,7 +33,7 @@ export default function LandingPage() {
           <nav className="space-x-4">
             <a href="#features" className="text-gray-700 hover:text-indigo-600">Features</a>
             <a href="#why" className="text-gray-700 hover:text-indigo-600">Why Sahayak?</a>
-            <a href="#cta" className="text-gray-700 hover:text-indigo-600">Dashboard</a>
+            <Link href="/dashboard" className="text-gray-700 hover:text-indigo-600">Dashboard</Link>
             <button className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
               Sign In
             </button>

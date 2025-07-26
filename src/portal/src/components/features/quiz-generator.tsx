@@ -11,132 +11,17 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "@/components/ui/loader";
 import { useToast } from "@/hooks/use-toast";
-// import { generateQuizWithAgent, type GenerateQuizOutput } from "@/ai/flows/generate-quiz-agent";
 
-// Temporary mock function until the actual AI flow is implemented
-type GenerateQuizOutput = {
-  quiz: string;
-};
+// Define APP_URL with localhost as default
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_AGENT_API_URL || "http://localhost:8080";
 
-const generateQuizWithAgent = async (data: any): Promise<GenerateQuizOutput> => {
-  // Mock implementation
-  await new Promise(resolve => setTimeout(resolve, 2000));
-  return {
-    quiz: `<ol>
-      <li><strong>Question 1:</strong> What is the main topic we discussed? <br><em>Answer: ${data.topic}</em></li>
-      <li><strong>Question 2:</strong> Which grade level is this quiz designed for? <br><em>Answer: ${data.grade_level}</em></li>
-      <li><strong>Question 3:</strong> How many questions were requested? <br><em>Answer: ${data.num_questions}</em></li>
-    </ol>`
-  };
-};
-
-// Interactive Quiz Component to handle answers
-function InteractiveQuiz({ htmlContent }: { htmlContent: string }) {
-  const [showAnswers, setShowAnswers] = React.useState<{ [key: number]: boolean }>({});
-  const [showAllAnswers, setShowAllAnswers] = React.useState(false);
-
-  // Parse HTML content and extract questions with answers
-  const parseQuizContent = (html: string) => {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-    const listItems = doc.querySelectorAll('li');
-    
-    return Array.from(listItems).map((li, index) => ({
-      id: index,
-      content: li.innerHTML,
-      answer: li.getAttribute('data-answer') || '',
-      explanation: li.getAttribute('data-explanation') || '',
-    }));
-  };
-
-  const questions = parseQuizContent(htmlContent);
-
-  const toggleAnswer = (questionId: number) => {
-    setShowAnswers(prev => ({
-      ...prev,
-      [questionId]: !prev[questionId]
-    }));
-  };
-
-  const toggleAllAnswers = () => {
-    const newState = !showAllAnswers;
-    setShowAllAnswers(newState);
-    
-    const newShowAnswers: { [key: number]: boolean } = {};
-    questions.forEach((_, index) => {
-      newShowAnswers[index] = newState;
-    });
-    setShowAnswers(newShowAnswers);
-  };
-
-  return (
-    <div className="space-y-4">
-      {/* Add custom styles for quiz formatting */}
-      <style jsx>{`
-        .quiz-question strong {
-          color: #2563eb;
-          margin-bottom: 8px;
-          display: inline-block;
-        }
-        .quiz-question br {
-          margin-bottom: 4px;
-        }
-      `}</style>
-
-      {/* Toggle All Answers Button */}
-      <div className="flex justify-end">
-        <Button 
-          onClick={toggleAllAnswers}
-          variant="outline"
-          size="sm"
-        >
-          {showAllAnswers ? "Hide All Answers" : "Show All Answers"}
-        </Button>
-      </div>
-
-      {/* Questions List */}
-      <ol className="space-y-6">
-        {questions.map((question, index) => (
-          <li key={question.id} className="border rounded-lg p-4 bg-gray-50">
-            <div className="space-y-3">
-              {/* Question Content */}
-              <div 
-                className="quiz-question"
-                dangerouslySetInnerHTML={{ __html: question.content }}
-              />
-              
-              {/* Check Answer Button */}
-              <div className="flex justify-start">
-                <Button
-                  onClick={() => toggleAnswer(question.id)}
-                  variant="secondary"
-                  size="sm"
-                >
-                  {showAnswers[question.id] ? "Hide Answer" : "Check Answer"}
-                </Button>
-              </div>
-
-              {/* Answer Section */}
-              {showAnswers[question.id] && (
-                <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-md">
-                  <div className="space-y-2">
-                    <div className="font-semibold text-green-800">
-                      ✓ Correct Answer: <span className="font-normal">{question.answer}</span>
-                    </div>
-                    {question.explanation && (
-                      <div className="text-sm text-green-700">
-                        <strong>Explanation:</strong> {question.explanation}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          </li>
-        ))}
-      </ol>
-    </div>
-  );
+// Simple UUID v4 generator
+function uuidv4() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
 }
 
 const formSchema = z.object({
@@ -149,9 +34,11 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function QuizGenerator() {
   const { toast } = useToast();
+  const [userId, setUserId] = React.useState<string | null>(null);
+  const [sessionId, setSessionId] = React.useState<string | null>(null);
+  const [appName, setAppName] = React.useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
-  const [quizResult, setQuizResult] = React.useState<GenerateQuizOutput | null>(null);
-  const [error, setError] = React.useState<string | null>(null);
+  const [quizResult, setQuizResult] = React.useState<string | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -162,47 +49,304 @@ export default function QuizGenerator() {
     },
   });
 
-  async function onSubmit(values: FormValues) {
+  const retryWithBackoff = async (
+    fn: () => Promise<any>,
+    maxRetries: number = 10,
+    maxDuration: number = 120000 // 2 minutes
+  ): Promise<any> => {
+    const startTime = Date.now();
+    let lastError: Error;
+    
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      if (Date.now() - startTime > maxDuration) {
+        throw new Error(`Retry timeout after ${maxDuration}ms`);
+      }
+      
+      try {
+        return await fn();
+      } catch (error) {
+        lastError = error as Error;
+        const delay = Math.min(1000 * Math.pow(2, attempt), 5000); // Exponential backoff, max 5s
+        console.log(`Attempt ${attempt + 1} failed, retrying in ${delay}ms...`, error);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+    
+    throw lastError!;
+  };
+
+  const createSession = async (): Promise<{userId: string, sessionId: string, appName: string}> => {
+    const generatedSessionId = uuidv4();
+    const response = await fetch(`${APP_URL}/apps/quiz_generator/users/u_999/sessions/${generatedSessionId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to create session: ${response.status} ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    return {
+      userId: data.userId,
+      sessionId: data.id,
+      appName: data.appName
+    };
+  };
+
+  const callRunSSE = async (userText: string, currentUserId: string, currentSessionId: string, currentAppName: string) => {
+    try {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      // Add authorization header if token is available
+      // if (TOKEN) {
+      //   headers['Authorization'] = `Bearer ${TOKEN}`;
+      // }
+
+      const response = await fetch(`${APP_URL}/run_sse`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          appName: currentAppName,
+          userId: currentUserId,
+          sessionId: currentSessionId,
+          newMessage: {
+            role: "user",
+            parts: [{
+              text: userText
+            }]
+          },
+          streaming: false
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+      }
+
+      // Handle SSE streaming response
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let lineBuffer = ""; 
+      let eventDataBuffer = "";
+      let finalResult = null;
+
+      if (reader) {
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+          const { done, value } = await reader.read();
+
+          if (value) {
+            lineBuffer += decoder.decode(value, { stream: true });
+          }
+          
+          let eolIndex;
+          // Process all complete lines in the buffer, or the remaining buffer if 'done'
+          while ((eolIndex = lineBuffer.indexOf('\n')) >= 0 || (done && lineBuffer.length > 0)) {
+            let line: string;
+            if (eolIndex >= 0) {
+              line = lineBuffer.substring(0, eolIndex);
+              lineBuffer = lineBuffer.substring(eolIndex + 1);
+            } else { // Only if done and lineBuffer has content without a trailing newline
+              line = lineBuffer;
+              lineBuffer = "";
+            }
+
+            if (line.trim() === "") { // Empty line: dispatch event
+              if (eventDataBuffer.length > 0) {
+                // Remove trailing newline before parsing
+                const jsonDataToParse = eventDataBuffer.endsWith('\n') ? eventDataBuffer.slice(0, -1) : eventDataBuffer;
+                console.log('[SSE QUIZ] Processing event:', jsonDataToParse.substring(0, 200) + "...");
+                
+                try {
+                  const parsed = JSON.parse(jsonDataToParse);
+                  // Store the latest parsed data as final result
+                  finalResult = parsed;
+                  
+                  // If this contains the final quiz data, we can break early
+                  if (parsed.content?.parts?.[0]?.text && parsed.content.parts[0].text.includes('quiz_generator_agent_response')) {
+                    console.log('[SSE QUIZ] Found final quiz result');
+                  }
+                } catch (parseError) {
+                  console.error('[SSE QUIZ] Parse error:', parseError);
+                }
+                
+                eventDataBuffer = ""; // Reset for next event
+              }
+            } else if (line.startsWith('data:')) {
+              eventDataBuffer += line.substring(5).trimStart() + '\n'; // Add newline as per spec for multi-line data
+            } else if (line.startsWith(':')) {
+              // Comment line, ignore
+            } // Other SSE fields (event, id, retry) can be handled here if needed
+          }
+
+          if (done) {
+            // If the loop exited due to 'done', and there's still data in eventDataBuffer
+            if (eventDataBuffer.length > 0) {
+              const jsonDataToParse = eventDataBuffer.endsWith('\n') ? eventDataBuffer.slice(0, -1) : eventDataBuffer;
+              console.log('[SSE QUIZ] Processing final event:', jsonDataToParse.substring(0, 200) + "...");
+              
+              try {
+                const parsed = JSON.parse(jsonDataToParse);
+                finalResult = parsed;
+              } catch (parseError) {
+                console.error('[SSE QUIZ] Final parse error:', parseError);
+              }
+            }
+            break; // Exit the while(true) loop
+          }
+        }
+      }
+
+      console.log("API Response (Final):", finalResult);
+      return finalResult;
+    } catch (error) {
+      console.error("Error calling run_sse:", error);
+      throw error;
+    }
+  };
+
+  const extractQuizData = (result: any) => {
+    try {
+      // Check if result has the expected structure
+      if (result?.content?.parts?.[0]?.text) {
+        const textContent = result.content.parts[0].text;
+        
+        // Try to parse the quiz_generator_agent_response from the text
+        if (textContent.includes('quiz_generator_agent_response')) {
+          const parsed = JSON.parse(textContent);
+          if (parsed.quiz_generator_agent_response) {
+            return {
+              type: 'quiz',
+              data: parsed.quiz_generator_agent_response
+            };
+          }
+        }
+      }
+      
+      // Check for function response with quiz data
+      if (result?.content?.parts?.[0]?.functionResponse?.response) {
+        const functionResponse = result.content.parts[0].functionResponse.response;
+        if (functionResponse.questions) {
+          return {
+            type: 'quiz',
+            data: functionResponse
+          };
+        }
+      }
+      
+      // Return raw result if no specific quiz format found
+      return {
+        type: 'raw',
+        data: result
+      };
+    } catch (error) {
+      console.error('Error extracting quiz data:', error);
+      return {
+        type: 'raw',
+        data: result
+      };
+    }
+  };
+
+  const formatQuizDisplay = (quizData: any) => {
+    if (!quizData.questions || !Array.isArray(quizData.questions)) {
+      return JSON.stringify(quizData, null, 2);
+    }
+
+    let formatted = `# ${quizData.title || 'Quiz'}\n`;
+    formatted += `**Grade:** ${quizData.grade || 'N/A'}\n\n`;
+
+    quizData.questions.forEach((question: any, index: number) => {
+      formatted += `## Question ${index + 1}\n`;
+      formatted += `**${question.question_text}**\n\n`;
+
+      if (question.type === 'mcq' && question.options) {
+        question.options.forEach((option: any) => {
+          const marker = option.id === question.correct_answer ? '✅' : '⚪';
+          formatted += `${marker} ${option.id}. ${option.text}\n`;
+        });
+      } else if (question.type === 'true_false' && question.options) {
+        question.options.forEach((option: any) => {
+          const marker = option.id === question.correct_answer ? '✅' : '⚪';
+          formatted += `${marker} ${option.text}\n`;
+        });
+      } else if (question.type === 'fill_blank') {
+        formatted += `**Answer:** ${question.correct_answer}\n`;
+      }
+
+      if (question.explanation) {
+        formatted += `\n**Explanation:** ${question.explanation}\n`;
+      }
+      
+      formatted += '\n---\n\n';
+    });
+
+    return formatted;
+  };
+
+  const onSubmit = async (values: FormValues) => {
     setIsLoading(true);
     setQuizResult(null);
-    setError(null);
-    
+
     try {
-      const response = await generateQuizWithAgent(values);
-      setQuizResult(response);
-      toast({
-        title: "Success!",
-        description: "Quiz generated successfully.",
-      });
-    } catch (error) {
-      console.error(error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      setError(errorMessage);
+      // Create session if it doesn't exist
+      let currentUserId = userId;
+      let currentSessionId = sessionId;
+      let currentAppName = appName;
+      
+      if (!currentSessionId || !currentUserId || !currentAppName) {
+        console.log('Creating new session...');
+        const sessionData = await retryWithBackoff(createSession);
+        currentUserId = sessionData.userId;
+        currentSessionId = sessionData.sessionId;
+        currentAppName = sessionData.appName;
+        
+        setUserId(currentUserId);
+        setSessionId(currentSessionId);
+        setAppName(currentAppName);
+        console.log('Session created successfully:', { currentUserId, currentSessionId, currentAppName });
+      }
+
+      // Prepare the user message
+      const userMessage = `Need quiz topic is ${values.quizTitle}, grade is ${values.gradeLevel}. Additional requirements: ${values.questions}`;
+
+      // Call run_sse API with retry logic
+      console.log("Calling run_sse API...");
+      const callAPI = async () => {
+        return await callRunSSE(userMessage, currentUserId!, currentSessionId!, currentAppName!);
+      };
+
+      const result = await retryWithBackoff(callAPI);
+
+      // Extract and format quiz data
+      const extractedData = extractQuizData(result);
+      if (extractedData.type === 'quiz') {
+        const formattedQuiz = formatQuizDisplay(extractedData.data);
+        setQuizResult(formattedQuiz);
+      } else {
+        setQuizResult(JSON.stringify(result, null, 2));
+      }
       
       toast({
+        title: "Success!",
+        description: "Quiz generated successfully. Check the response below.",
+      });
+
+    } catch (error) {
+      console.error("Error generating quiz:", error);
+      toast({
         title: "Error",
-        description: errorMessage,
+        description: `Failed to generate quiz: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
-  }
-
-  const formatQuizDisplay = (quiz: GenerateQuizOutput) => {
-    return (
-      <div className="space-y-6">
-        {/* Only show grade level if available, no duplicate title */}
-        {quiz.grade && (
-          <div>
-            <p className="text-gray-600">Grade Level: {quiz.grade}</p>
-          </div>
-        )}
-        
-        {/* Interactive Quiz Component */}
-        <InteractiveQuiz htmlContent={quiz.htmlContent} />
-      </div>
-    );
   };
 
   return (
@@ -213,7 +357,7 @@ export default function QuizGenerator() {
             <CardHeader>
               <CardTitle className="font-headline">Quiz Generator</CardTitle>
               <CardDescription>
-                Create educational quizzes tailored to your needs using our AI agent. Fill in the details below to get started.
+                Create quizzes tailored to your needs. Fill in the details below to get started.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -222,9 +366,9 @@ export default function QuizGenerator() {
                 name="quizTitle"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Quiz Title/Topic</FormLabel>
+                    <FormLabel>Quiz Title</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., Math Quiz on Fractions" {...field} />
+                      <Input placeholder="e.g., Math Quiz for Grade 2" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -237,7 +381,7 @@ export default function QuizGenerator() {
                   <FormItem>
                     <FormLabel>Grade Level</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., Grade 6" {...field} />
+                      <Input placeholder="e.g., Grade 2" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -248,11 +392,11 @@ export default function QuizGenerator() {
                 name="questions"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Additional Requirements</FormLabel>
+                    <FormLabel>Questions</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="e.g., Focus on comparing fractions, include word problems"
-                        rows={4}
+                        placeholder="e.g., What is 2+2?\nWhat is 5-3?"
+                        rows={5}
                         {...field}
                       />
                     </FormControl>
@@ -261,66 +405,49 @@ export default function QuizGenerator() {
                 )}
               />
             </CardContent>
-            <CardFooter>
-              <Button type="submit" disabled={isLoading} className="w-full">
+            <div className="p-4">
+              <Button type="submit" disabled={isLoading}>
                 {isLoading && <Loader className="mr-2" />}
-                {isLoading ? "Generating Quiz..." : "Generate Quiz"}
+                Generate Quiz
               </Button>
-            </CardFooter>
+            </div>
           </form>
         </Form>
       </Card>
-      
+
+      {/* Loading indicator */}
       {isLoading && (
         <Card>
-          <CardContent className="p-6 flex flex-col items-center justify-center">
-            <Loader size="lg" className="mb-4" />
-            <p className="text-muted-foreground">
-              Generating quiz using AI agent... this may take a moment.
-            </p>
-          </CardContent>
-        </Card>
-      )}
-
-      {error && (
-        <Card className="border-destructive">
-          <CardHeader>
-            <CardTitle className="font-headline text-destructive flex items-center gap-2">
-              <span className="text-xl">⚠️</span>
-              Quiz Generation Failed
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">{error}</p>
-              
-              <div className="flex gap-2">
-                <Button 
-                  onClick={() => {
-                    setError(null);
-                    form.reset();
-                  }} 
-                  variant="outline" 
-                  className="w-full"
-                >
-                  Try Again
-                </Button>
-              </div>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-center space-x-2">
+              <Loader size="md" />
+              <span>Generating your quiz...</span>
             </div>
           </CardContent>
         </Card>
       )}
 
-      {quizResult && !error && (
+      {/* Response display */}
+      {quizResult && (
         <Card>
           <CardHeader>
-            <CardTitle className="font-headline">Generated Quiz</CardTitle>
+            <CardTitle>Quiz Generated Successfully!</CardTitle>
             <CardDescription>
-              Here's your customized quiz ready to use!
+              {quizResult.startsWith('#') ? 'Here\'s your formatted quiz:' : 'Here\'s the response from the API:'}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {formatQuizDisplay(quizResult)}
+            {quizResult.startsWith('#') ? (
+              <div className="prose max-w-none bg-gray-50 p-4 rounded-md">
+                <div className="whitespace-pre-wrap text-sm">
+                  {quizResult}
+                </div>
+              </div>
+            ) : (
+              <pre className="whitespace-pre-wrap bg-gray-100 p-4 rounded-md text-sm overflow-x-auto">
+                {quizResult}
+              </pre>
+            )}
           </CardContent>
         </Card>
       )}

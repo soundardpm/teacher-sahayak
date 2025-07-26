@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import {
   AudioLines,
   BrainCircuit,
@@ -54,7 +55,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Logo } from "@/components/icons";
 
 import LocalizedContent from "@/components/features/localized-content";
 import DifferentiatedMaterials from "@/components/features/differentiated-materials";
@@ -226,9 +226,13 @@ function Dashboard() {
           <Sidebar className="border-r border-border/50">
             <SidebarHeader className="border-b border-border/50 bg-card/50">
               <div className="flex items-center gap-2 p-2">
-                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <Logo className="size-5 text-primary" />
-                </div>
+                <Image 
+                  src="/logo.png" 
+                  alt="Sahayak AI Logo" 
+                  width={32} 
+                  height={32} 
+                  className="rounded-lg"
+                />
                 <span className="text-xl font-semibold font-headline">
                   Sahayak AI
                 </span>
