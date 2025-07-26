@@ -12,6 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Initializes the practical_mind package."""
+"""Use case generator sub-agent for creating real-world applications and examples of concepts."""
 
-from .agent import practical_mind
+from google.adk import Agent
+
+from . import prompt
+
+MODEL = "gemini-2.5-flash"
+
+practical_mind = Agent(
+    model=MODEL,
+    name="practical_mind",
+    instruction=prompt.USE_CASE_GENERATOR_PROMPT,
+)

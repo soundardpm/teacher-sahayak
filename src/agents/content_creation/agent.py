@@ -20,8 +20,9 @@ from google.adk.tools.agent_tool import AgentTool
 from . import prompt
 from .sub_agents.worksheet_creator_agent import worksheet_creator_agent
 from .sub_agents.story_generator_agent import story_generator_agent
-from .sub_agents.practical_mind import use_case_generator_agent
+from .sub_agents.practical_mind import practical_mind
 from .sub_agents.concept_simplifier_agent import concept_simplifier_agent
+from .sub_agents.diagram_ease import diagram_ease
 
 
 MODEL = "gemini-2.5-flash"
@@ -41,9 +42,9 @@ content_creation_coordinator = LlmAgent(
     tools=[
         AgentTool(agent=worksheet_creator_agent),
         AgentTool(agent=story_generator_agent),
-        AgentTool(agent=use_case_generator_agent),
+        AgentTool(agent=practical_mind),
         AgentTool(agent=concept_simplifier_agent),
-        AgentTool(agent=localized_content_generator_agent),
+        AgentTool(agent=diagram_ease),
     ],
 )
 

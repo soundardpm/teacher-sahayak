@@ -12,6 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Initializes the practical_mind package."""
+"""Initializes the diagram_ease package."""
 
-from .agent import practical_mind
+from .agent import diagram_ease

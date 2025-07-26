@@ -17,11 +17,11 @@
 from google.adk.agents import LlmAgent, SequentialAgent
 from google.adk.tools.agent_tool import AgentTool
 
-# Import sub-agents from sub_agents folder
-from .sub_agents.teacher_intent_processor.agent import root_agent as teacher_intent_processor
-from .sub_agents.curriculum_content_retriever.agent import root_agent as curriculum_content_retriever
-from .sub_agents.lesson_plan_generator.agent import root_agent as lesson_plan_generator
-from .sub_agents.lesson_plan_validator.agent import root_agent as lesson_plan_validator
+# # Import sub-agents from sub_agents folder
+# from .sub_agents.teacher_intent_processor.agent import root_agent as teacher_intent_processor
+# from .sub_agents.curriculum_content_retriever.agent import root_agent as curriculum_content_retriever
+# from .sub_agents.lesson_plan_generator.agent import root_agent as lesson_plan_generator
+# from .sub_agents.lesson_plan_validator.agent import root_agent as lesson_plan_validator
 
 MODEL = "gemini-2.5-flash"
 

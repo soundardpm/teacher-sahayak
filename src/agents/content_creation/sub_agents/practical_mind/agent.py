@@ -20,7 +20,7 @@ from . import prompt
 
 MODEL = "gemini-2.5-flash"
 
-use_case_generator_agent = Agent(
+practical_mind = Agent(
     model=MODEL,
     name="use_case_generator_agent",
     instruction=prompt.USE_CASE_GENERATOR_PROMPT,
