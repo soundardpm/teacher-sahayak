@@ -108,13 +108,13 @@ function Dashboard() {
 
   const menuItems = [
     { id: "plan", icon: CalendarPlus, label: "Lesson Planner" },
+    { id: "visualize", icon: Paintbrush, label: "Content Hub" },
     { id: "localize", icon: Languages, label: "Localized Content" },
     {
       id: "differentiate",
       icon: UsersRound,
       label: "Differentiated Materials",
     },
-    { id: "visualize", icon: Paintbrush, label: "Content Hub" },
     {
       id: "assess",
       icon: AudioLines,
