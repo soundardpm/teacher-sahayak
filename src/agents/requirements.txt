@@ -4,4 +4,5 @@ google-cloud-aiplatform==1.92.0
 google-cloud-storage==2.19.0
 google-genai==1.14.0
 gitpython==3.1.40
+deprecated
 # Add any other dependencies your agent needs
