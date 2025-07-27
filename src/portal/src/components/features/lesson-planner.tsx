@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import ReactMarkdown from 'react-markdown';
 
 // Define APP_URL with localhost as default
 const APP_URL = "http://localhost:8000";
@@ -289,6 +290,14 @@ export default function LessonPlanner() {
             };
           }
         }
+        
+        // Check if the text content is already formatted markdown (starts with # or contains lesson plan structure)
+        if (textContent.startsWith('#') || textContent.includes('Learning Objectives') || textContent.includes('Week Overview')) {
+          return {
+            type: 'formatted_markdown',
+            data: textContent
+          };
+        }
       }
       
       // Check for function response with lesson plan data
@@ -440,6 +449,9 @@ export default function LessonPlanner() {
       if (extractedData.type === 'lesson_plan') {
         const formattedLessonPlan = formatLessonPlanDisplay(extractedData.data);
         setResult(formattedLessonPlan);
+      } else if (extractedData.type === 'formatted_markdown') {
+        // Content is already formatted markdown, use it directly
+        setResult(extractedData.data);
       } else {
         setResult(JSON.stringify(result, null, 2));
       }
@@ -617,12 +629,25 @@ export default function LessonPlanner() {
               <div className="font-bold text-blue-800 mb-4 text-xl">
                 📋 Generated Lesson Plan
               </div>
-              <div className="bg-white p-5 rounded-xl whitespace-pre-line leading-relaxed text-gray-700 max-h-96 overflow-y-auto">
+              <div className="bg-white p-5 rounded-xl leading-relaxed text-gray-700 max-h-96 overflow-y-auto">
                 {result.startsWith('#') ? (
-                  <div className="prose max-w-none">
-                    <div className="whitespace-pre-wrap text-sm">
+                  <div className="prose max-w-none markdown-content">
+                    <ReactMarkdown 
+                      components={{
+                        h1: ({children}) => <h1 className="text-2xl font-bold mb-4 text-gray-900">{children}</h1>,
+                        h2: ({children}) => <h2 className="text-xl font-bold mb-3 mt-6 text-gray-800">{children}</h2>,
+                        h3: ({children}) => <h3 className="text-lg font-semibold mb-2 mt-4 text-gray-700">{children}</h3>,
+                        p: ({children}) => <p className="mb-3 text-gray-700 leading-relaxed">{children}</p>,
+                        ul: ({children}) => <ul className="list-disc pl-6 mb-3 space-y-1">{children}</ul>,
+                        ol: ({children}) => <ol className="list-decimal pl-6 mb-3 space-y-1">{children}</ol>,
+                        li: ({children}) => <li className="text-gray-700">{children}</li>,
+                        strong: ({children}) => <strong className="font-semibold text-gray-900">{children}</strong>,
+                        hr: () => <hr className="my-6 border-gray-300" />,
+                        blockquote: ({children}) => <blockquote className="border-l-4 border-blue-500 pl-4 italic text-gray-600 my-4">{children}</blockquote>,
+                      }}
+                    >
                       {result}
-                    </div>
+                    </ReactMarkdown>
                   </div>
                 ) : (
                   <pre className="whitespace-pre-wrap text-sm overflow-x-auto">

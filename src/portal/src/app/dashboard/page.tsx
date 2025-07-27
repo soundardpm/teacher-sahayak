@@ -196,8 +196,8 @@ function Dashboard() {
       label: "Differentiated Materials",
     },
     { id: "knowledge", icon: BrainCircuit, label: "Instant Knowledge Base" },
-    { id: "visualize", icon: Paintbrush, label: "Visual Aid Design" },
-    { id: "plan", icon: CalendarPlus, label: "Weekly Lesson Planner" },
+    { id: "visualize", icon: Paintbrush, label: "Visual Diagrams" },
+    { id: "plan", icon: CalendarPlus, label: "Lesson Planner" },
     {
       id: "assess",
       icon: AudioLines,
