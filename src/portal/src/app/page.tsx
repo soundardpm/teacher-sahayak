@@ -51,9 +51,11 @@ export default function LandingPage() {
             An AI-powered teaching assistant for India's multi-grade, low-resource classrooms. Create lessons, generate worksheets, and bring learning to life—instantly.
           </p>
           <div data-aos="zoom-in" data-aos-delay="200">
-            <button className="px-6 py-3 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700">
-              See How It Works
-            </button>
+            <Link href="/dashboard">
+              <button className="px-6 py-3 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700">
+                Dashboard
+              </button>
+            </Link>
           </div>
         </section>
 

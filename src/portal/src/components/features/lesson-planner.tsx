@@ -14,10 +14,25 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
+// Define APP_URL with localhost as default
+const APP_URL = "http://localhost:8000";
+
+// Simple UUID v4 generator
+function uuidv4() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
 export default function LessonPlanner() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = React.useState(false);
   const [result, setResult] = React.useState<string>("");
+  const [userId, setUserId] = React.useState<string | null>(null);
+  const [sessionId, setSessionId] = React.useState<string | null>(null);
+  const [appName, setAppName] = React.useState<string | null>(null);
   
   // Form state
   const [subject, setSubject] = React.useState("");
@@ -95,6 +110,277 @@ export default function LessonPlanner() {
     return prompt;
   };
 
+  const retryWithBackoff = async (
+    fn: () => Promise<any>,
+    maxRetries: number = 10,
+    maxDuration: number = 120000 // 2 minutes
+  ): Promise<any> => {
+    const startTime = Date.now();
+    let lastError: Error;
+    
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      if (Date.now() - startTime > maxDuration) {
+        throw new Error(`Retry timeout after ${maxDuration}ms`);
+      }
+      
+      try {
+        return await fn();
+      } catch (error) {
+        lastError = error as Error;
+        const delay = Math.min(1000 * Math.pow(2, attempt), 5000); // Exponential backoff, max 5s
+        console.log(`Attempt ${attempt + 1} failed, retrying in ${delay}ms...`, error);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+    
+    throw lastError!;
+  };
+
+  const createSession = async (): Promise<{userId: string, sessionId: string, appName: string}> => {
+    const generatedSessionId = uuidv4();
+    console.log(`Creating session with ID: ${generatedSessionId}`);
+    console.log(`Using APP_URL: ${APP_URL}`);
+    const response = await fetch(`${APP_URL}/apps/lesson_planner/users/u_999/sessions/${generatedSessionId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to create session: ${response.status} ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    return {
+      userId: data.userId,
+      sessionId: data.id,
+      appName: data.appName
+    };
+  };
+
+  const callRunSSE = async (userText: string, currentUserId: string, currentSessionId: string, currentAppName: string) => {
+    try {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      // Add authorization header if token is available
+      // if (TOKEN) {
+      //   headers['Authorization'] = `Bearer ${TOKEN}`;
+      // }
+
+      const response = await fetch(`${APP_URL}/run_sse`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          appName: currentAppName,
+          userId: currentUserId,
+          sessionId: currentSessionId,
+          newMessage: {
+            role: "user",
+            parts: [{
+              text: userText
+            }]
+          },
+          streaming: false
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+      }
+
+      // Handle SSE streaming response
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let lineBuffer = ""; 
+      let eventDataBuffer = "";
+      let finalResult = null;
+
+      if (reader) {
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+          const { done, value } = await reader.read();
+
+          if (value) {
+            lineBuffer += decoder.decode(value, { stream: true });
+          }
+          
+          let eolIndex;
+          // Process all complete lines in the buffer, or the remaining buffer if 'done'
+          while ((eolIndex = lineBuffer.indexOf('\n')) >= 0 || (done && lineBuffer.length > 0)) {
+            let line: string;
+            if (eolIndex >= 0) {
+              line = lineBuffer.substring(0, eolIndex);
+              lineBuffer = lineBuffer.substring(eolIndex + 1);
+            } else { // Only if done and lineBuffer has content without a trailing newline
+              line = lineBuffer;
+              lineBuffer = "";
+            }
+
+            if (line.trim() === "") { // Empty line: dispatch event
+              if (eventDataBuffer.length > 0) {
+                // Remove trailing newline before parsing
+                const jsonDataToParse = eventDataBuffer.endsWith('\n') ? eventDataBuffer.slice(0, -1) : eventDataBuffer;
+                console.log('[SSE LESSON] Processing event:', jsonDataToParse.substring(0, 200) + "...");
+                
+                try {
+                  const parsed = JSON.parse(jsonDataToParse);
+                  // Store the latest parsed data as final result
+                  finalResult = parsed;
+                  
+                  // If this contains the final lesson plan data, we can break early
+                  if (parsed.content?.parts?.[0]?.text && parsed.content.parts[0].text.includes('lesson_planner_agent_response')) {
+                    console.log('[SSE LESSON] Found final lesson plan result');
+                  }
+                } catch (parseError) {
+                  console.error('[SSE LESSON] Parse error:', parseError);
+                }
+                
+                eventDataBuffer = ""; // Reset for next event
+              }
+            } else if (line.startsWith('data:')) {
+              eventDataBuffer += line.substring(5).trimStart() + '\n'; // Add newline as per spec for multi-line data
+            } else if (line.startsWith(':')) {
+              // Comment line, ignore
+            } // Other SSE fields (event, id, retry) can be handled here if needed
+          }
+
+          if (done) {
+            // If the loop exited due to 'done', and there's still data in eventDataBuffer
+            if (eventDataBuffer.length > 0) {
+              const jsonDataToParse = eventDataBuffer.endsWith('\n') ? eventDataBuffer.slice(0, -1) : eventDataBuffer;
+              console.log('[SSE LESSON] Processing final event:', jsonDataToParse.substring(0, 200) + "...");
+              
+              try {
+                const parsed = JSON.parse(jsonDataToParse);
+                finalResult = parsed;
+              } catch (parseError) {
+                console.error('[SSE LESSON] Final parse error:', parseError);
+              }
+            }
+            break; // Exit the while(true) loop
+          }
+        }
+      }
+
+      console.log("API Response (Final):", finalResult);
+      return finalResult;
+    } catch (error) {
+      console.error("Error calling run_sse:", error);
+      throw error;
+    }
+  };
+
+  const extractLessonPlanData = (result: any) => {
+    try {
+      // Check if result has the expected structure
+      if (result?.content?.parts?.[0]?.text) {
+        const textContent = result.content.parts[0].text;
+        
+        // Try to parse the lesson_planner_agent_response from the text
+        if (textContent.includes('lesson_planner_agent_response')) {
+          const parsed = JSON.parse(textContent);
+          if (parsed.lesson_planner_agent_response) {
+            return {
+              type: 'lesson_plan',
+              data: parsed.lesson_planner_agent_response
+            };
+          }
+        }
+      }
+      
+      // Check for function response with lesson plan data
+      if (result?.content?.parts?.[0]?.functionResponse?.response) {
+        const functionResponse = result.content.parts[0].functionResponse.response;
+        if (functionResponse.lesson_plan || functionResponse.title) {
+          return {
+            type: 'lesson_plan',
+            data: functionResponse
+          };
+        }
+      }
+      
+      // Return raw result if no specific lesson plan format found
+      return {
+        type: 'raw',
+        data: result
+      };
+    } catch (error) {
+      console.error('Error extracting lesson plan data:', error);
+      return {
+        type: 'raw',
+        data: result
+      };
+    }
+  };
+
+  const formatLessonPlanDisplay = (lessonPlanData: any) => {
+    if (!lessonPlanData) {
+      return JSON.stringify(lessonPlanData, null, 2);
+    }
+
+    let formatted = `# ${lessonPlanData.title || 'Lesson Plan'}\n\n`;
+    
+    if (lessonPlanData.subject) formatted += `**Subject:** ${lessonPlanData.subject}\n`;
+    if (lessonPlanData.grade) formatted += `**Grade:** ${lessonPlanData.grade}\n`;
+    if (lessonPlanData.topic) formatted += `**Topic:** ${lessonPlanData.topic}\n`;
+    if (lessonPlanData.duration) formatted += `**Duration:** ${lessonPlanData.duration}\n`;
+    if (lessonPlanData.language) formatted += `**Language:** ${lessonPlanData.language}\n\n`;
+
+    if (lessonPlanData.objectives) {
+      formatted += `## Learning Objectives\n`;
+      if (Array.isArray(lessonPlanData.objectives)) {
+        lessonPlanData.objectives.forEach((objective: any, index: number) => {
+          formatted += `${index + 1}. ${objective}\n`;
+        });
+      } else {
+        formatted += `${lessonPlanData.objectives}\n`;
+      }
+      formatted += '\n';
+    }
+
+    if (lessonPlanData.activities) {
+      formatted += `## Activities\n`;
+      if (Array.isArray(lessonPlanData.activities)) {
+        lessonPlanData.activities.forEach((activity: any, index: number) => {
+          formatted += `### Activity ${index + 1}\n`;
+          if (typeof activity === 'object') {
+            if (activity.title) formatted += `**Title:** ${activity.title}\n`;
+            if (activity.description) formatted += `**Description:** ${activity.description}\n`;
+            if (activity.duration) formatted += `**Duration:** ${activity.duration}\n`;
+            if (activity.materials) formatted += `**Materials:** ${activity.materials}\n`;
+          } else {
+            formatted += `${activity}\n`;
+          }
+          formatted += '\n';
+        });
+      } else {
+        formatted += `${lessonPlanData.activities}\n\n`;
+      }
+    }
+
+    if (lessonPlanData.assessment) {
+      formatted += `## Assessment\n`;
+      formatted += `${lessonPlanData.assessment}\n\n`;
+    }
+
+    if (lessonPlanData.resources) {
+      formatted += `## Resources\n`;
+      if (Array.isArray(lessonPlanData.resources)) {
+        lessonPlanData.resources.forEach((resource: any) => {
+          formatted += `• ${resource}\n`;
+        });
+      } else {
+        formatted += `${lessonPlanData.resources}\n`;
+      }
+      formatted += '\n';
+    }
+
+    return formatted || JSON.stringify(lessonPlanData, null, 2);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -111,6 +397,24 @@ export default function LessonPlanner() {
     setResult("");
 
     try {
+      // Create session if it doesn't exist
+      let currentUserId = userId;
+      let currentSessionId = sessionId;
+      let currentAppName = appName;
+      
+      if (!currentSessionId || !currentUserId || !currentAppName) {
+        console.log('Creating new session...');
+        const sessionData = await retryWithBackoff(createSession);
+        currentUserId = sessionData.userId;
+        currentSessionId = sessionData.sessionId;
+        currentAppName = sessionData.appName;
+        
+        setUserId(currentUserId);
+        setSessionId(currentSessionId);
+        setAppName(currentAppName);
+        console.log('Session created successfully:', { currentUserId, currentSessionId, currentAppName });
+      }
+
       const formData = {
         subject,
         gradeLevel,
@@ -120,41 +424,39 @@ export default function LessonPlanner() {
         specialRequirements
       };
       
-      const prompt = constructPrompt(formData);
+      // Prepare the user message
+      const userMessage = constructPrompt(formData);
 
-      // Simulate API call
-      setTimeout(() => {
-        const generatedResult = `Generated Prompt for AI Orchestrator:
+      // Call run_sse API with retry logic
+      console.log("Calling run_sse API...");
+      const callAPI = async () => {
+        return await callRunSSE(userMessage, currentUserId!, currentSessionId!, currentAppName!);
+      };
 
-"${prompt}"
+      const result = await retryWithBackoff(callAPI);
 
-Your AI workflow will now process this request through the 4-stage sequential process:
+      // Extract and format lesson plan data
+      const extractedData = extractLessonPlanData(result);
+      if (extractedData.type === 'lesson_plan') {
+        const formattedLessonPlan = formatLessonPlanDisplay(extractedData.data);
+        setResult(formattedLessonPlan);
+      } else {
+        setResult(JSON.stringify(result, null, 2));
+      }
+      
+      toast({
+        title: "Success!",
+        description: "Lesson plan generated successfully. Check the response below.",
+      });
 
-1. Teacher Intent Analysis - Understanding and structuring your requirements
-2. Curriculum Content Retrieval - Gathering relevant educational materials  
-3. Lesson Plan Generation - Creating detailed, structured lesson plans
-4. Quality Validation - Ensuring educational standards and appropriateness
-
-The final validated lesson plan will include:
-• Complete daily/weekly structure
-• Learning objectives and outcomes  
-• Detailed activities and assessments
-• Required resources and materials
-• Cultural adaptations (when specified)
-• Quality assurance confirmation
-
-[In a real implementation, this would connect to your AI orchestrator system]`;
-
-        setResult(generatedResult);
-        setIsLoading(false);
-      }, 3000);
     } catch (error) {
-      console.error(error);
+      console.error("Error generating lesson plan:", error);
       toast({
         title: "Error",
-        description: "Failed to generate the lesson plan. Please try again.",
+        description: `Failed to generate lesson plan: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: "destructive",
       });
+    } finally {
       setIsLoading(false);
     }
   };
@@ -291,7 +593,7 @@ The final validated lesson plan will include:
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Orchestrating AI Workflow...
+                    Generating Lesson Plan...
                   </>
                 ) : (
                   "🚀 Generate Lesson Plan"
@@ -299,6 +601,15 @@ The final validated lesson plan will include:
               </Button>
             </div>
           </form>
+          {/* Loading indicator */}
+          {isLoading && (
+            <div className="mt-6 bg-yellow-50 border-2 border-yellow-200 rounded-2xl p-6">
+              <div className="flex items-center justify-center space-x-2">
+                <Loader2 className="h-6 w-6 animate-spin text-yellow-600" />
+                <span className="text-yellow-800 font-medium">Generating your lesson plan...</span>
+              </div>
+            </div>
+          )}
           
           {/* Results */}
           {result && (
@@ -307,7 +618,17 @@ The final validated lesson plan will include:
                 📋 Generated Lesson Plan
               </div>
               <div className="bg-white p-5 rounded-xl whitespace-pre-line leading-relaxed text-gray-700 max-h-96 overflow-y-auto">
-                {result}
+                {result.startsWith('#') ? (
+                  <div className="prose max-w-none">
+                    <div className="whitespace-pre-wrap text-sm">
+                      {result}
+                    </div>
+                  </div>
+                ) : (
+                  <pre className="whitespace-pre-wrap text-sm overflow-x-auto">
+                    {result}
+                  </pre>
+                )}
               </div>
             </div>
           )}

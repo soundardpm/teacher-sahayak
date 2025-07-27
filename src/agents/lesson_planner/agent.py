@@ -78,60 +78,6 @@ Output *only* the JSON analysis. Do not add explanatory text before or after."""
     output_key="teacher_intent_analysis"
 )
 
-# Curriculum Content Retriever Agent
-# Takes the teacher intent analysis and retrieves relevant curriculum content
-curriculum_content_analysis_agent = LlmAgent(
-    name="CurriculumContentAnalysisAgent", 
-    model=MODEL,
-    instruction="""You are a curriculum content specialist responsible for gathering and organizing relevant educational content.
-
-**Your Task:**
-Based on the teacher's analyzed intent, identify and organize curriculum content that aligns with their goals.
-
-**Teacher Intent Analysis:**
-```json
-{teacher_intent_analysis}
-```
-
-**Content Retrieval Focus:**
-1. **Subject Standards**: Relevant curriculum standards and benchmarks
-2. **Learning Resources**: Textbooks, materials, and supplementary content
-3. **Assessment Frameworks**: Evaluation methods and rubrics
-4. **Cultural Adaptations**: Localized content and cultural considerations
-5. **Prerequisite Knowledge**: What students should know beforehand
-6. **Extension Opportunities**: Advanced or enrichment activities
-
-**Output Format:**
-Provide organized curriculum content in JSON format:
-```json
-{
-  "curriculum_standards": ["relevant standards and benchmarks"],
-  "key_concepts": ["main concepts to be taught"],
-  "learning_resources": {
-    "primary_materials": ["textbooks, core resources"],
-    "supplementary_materials": ["additional resources"],
-    "digital_resources": ["online tools, videos, apps"]
-  },
-  "prerequisite_knowledge": ["required prior learning"],
-  "assessment_frameworks": ["evaluation methods and rubrics"],
-  "cultural_adaptations": ["localized content suggestions"],
-  "vocabulary_terms": ["key terms students should learn"],
-  "real_world_connections": ["practical applications"],
-  "cross_curricular_links": ["connections to other subjects"]
-}
-```
-
-**Guidelines:**
-- Align content with the identified pedagogical approach
-- Consider the grade level and student context
-- Include culturally relevant and inclusive materials
-- Ensure content supports the specified learning outcomes
-
-Output *only* the JSON content analysis. Do not add explanatory text before or after.""",
-    description="Retrieves and organizes relevant curriculum content based on teacher intent.",
-    output_key="curriculum_content"
-)
-
 # Lesson Plan Generator Agent  
 # Takes the teacher intent and curriculum content to create detailed lesson plans
 lesson_plan_creation_agent = LlmAgent(
@@ -237,7 +183,7 @@ Create a comprehensive lesson plan in structured format:
 
 Output *only* the complete markdown lesson plan. Do not add explanatory text before or after.""",
     description="Creates detailed 5-day lesson plans based on teacher intent and curriculum content.",
-    output_key="generated_lesson_plan"
+    # output_key="generated_lesson_plan"
 )
 
 # Lesson Plan Validator Agent
@@ -323,7 +269,7 @@ lesson_planning_workflow = SequentialAgent(
         teacher_intent_analysis_agent,
         curriculum_content_retriever, 
         lesson_plan_creation_agent,
-        lesson_plan_validation_agent
+        # lesson_plan_validation_agent
     ]
     # The agents will run in order: Intent Analysis -> Content Retrieval -> Plan Generation -> Validation
 )

@@ -13,7 +13,7 @@ import { Loader } from "@/components/ui/loader";
 import { useToast } from "@/hooks/use-toast";
 
 // Define APP_URL with localhost as default
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_AGENT_API_URL || "http://localhost:8080";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_AGENT_API_URL || "http://localhost:8000";
 
 // Simple UUID v4 generator
 function uuidv4() {

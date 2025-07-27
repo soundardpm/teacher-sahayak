@@ -50,7 +50,7 @@ agent = Agent(
         load_memory_tool,
     ],
     # Output key automatically saves the agent's final response in state under this key
-    output_key=AGENT_OUTPUT_KEY
+    output_key="curriculum_content"
 )
 
 root_agent = agent
