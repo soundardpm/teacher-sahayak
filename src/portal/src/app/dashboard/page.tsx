@@ -122,6 +122,7 @@ function Dashboard() {
   };
 
   const menuItems = [
+    { id: "plan", icon: CalendarPlus, label: "Lesson Planner" },
     { id: "localize", icon: Languages, label: "Localized Content" },
     {
       id: "differentiate",
@@ -129,7 +130,6 @@ function Dashboard() {
       label: "Differentiated Materials",
     },
     { id: "visualize", icon: Paintbrush, label: "Visual Diagrams" },
-    { id: "plan", icon: CalendarPlus, label: "Lesson Planner" },
     {
       id: "assess",
       icon: AudioLines,
