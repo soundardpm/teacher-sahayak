@@ -41,7 +41,7 @@ import {
 } from "@/ai/flows/interactive-storyteller";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { SUPPORTED_LANGUAGES } from "@/lib/constants";
+import { SUPPORTED_LANGUAGES, SUPPORTED_GRADE_LEVELS } from "@/lib/constants";
 
 const formSchema = z.object({
   prompt: z.string().min(10, "Prompt must be at least 10 characters."),
@@ -183,7 +183,7 @@ export default function InteractiveStoryteller() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       prompt: "",
-      gradeLevel: "2nd Grade",
+      gradeLevel: "Grade 2",
       language: "English",
     },
   });
@@ -264,9 +264,18 @@ export default function InteractiveStoryteller() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Grade Level</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g., 2nd Grade" {...field} />
-                      </FormControl>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Grade Level" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {SUPPORTED_GRADE_LEVELS.map((grade) => (
+                            <SelectItem key={grade} value={grade}>{grade}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}

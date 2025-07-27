@@ -6,11 +6,19 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "@/components/ui/loader";
 import { useToast } from "@/hooks/use-toast";
+import { SUPPORTED_GRADE_LEVELS } from "@/lib/constants";
 
 // Define APP_URL with localhost as default
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_AGENT_API_URL || "http://localhost:8000";
@@ -380,9 +388,18 @@ export default function QuizGenerator() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Grade Level</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., Grade 2" {...field} />
-                    </FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Grade Level" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {SUPPORTED_GRADE_LEVELS.map((grade) => (
+                          <SelectItem key={grade} value={grade}>{grade}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

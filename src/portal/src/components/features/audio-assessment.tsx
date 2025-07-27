@@ -18,6 +18,13 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Card,
   CardContent,
   CardDescription,
@@ -29,6 +36,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader } from "@/components/ui/loader";
 import { assessReading, type AssessReadingOutput } from "@/ai/flows/reading-assessment";
 import { Badge } from "@/components/ui/badge";
+import { SUPPORTED_GRADE_LEVELS } from "@/lib/constants";
 
 const formSchema = z.object({
   textToRead: z.string().min(20, "Please enter at least 20 characters of text to read."),
@@ -156,9 +164,18 @@ export default function AudioAssessment() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Grade Level</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., 2nd Grade" {...field} />
-                    </FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Grade Level" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {SUPPORTED_GRADE_LEVELS.map((grade) => (
+                          <SelectItem key={grade} value={grade}>{grade}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

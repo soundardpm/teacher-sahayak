@@ -14,7 +14,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
-import { SUPPORTED_LANGUAGES } from "@/lib/constants";
+import { SUPPORTED_LANGUAGES, SUPPORTED_GRADE_LEVELS } from "@/lib/constants";
 
 // Define APP_URL with localhost as default
 const APP_URL = "http://localhost:8000";
@@ -60,10 +60,7 @@ export default function LessonPlanner() {
     "Physical Education",
   ];
 
-  const grades = [
-    "Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5", "Grade 6",
-    "Grade 7", "Grade 8", "Grade 9", "Grade 10", "Grade 11", "Grade 12"
-  ];
+  const grades = SUPPORTED_GRADE_LEVELS;
 
   const languages = SUPPORTED_LANGUAGES;
 

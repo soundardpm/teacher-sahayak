@@ -17,6 +17,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Card,
   CardContent,
   CardDescription,
@@ -26,6 +33,7 @@ import {
 } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Loader } from "@/components/ui/loader";
+import { SUPPORTED_GRADE_LEVELS } from "@/lib/constants";
 import { generateGame, type GenerateGameOutput } from "@/ai/flows/game-generation";
 
 const formSchema = z.object({
@@ -97,9 +105,18 @@ export default function GameGeneration() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Grade Level</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., 3rd Grade" {...field} />
-                    </FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Grade Level" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {SUPPORTED_GRADE_LEVELS.map((grade) => (
+                          <SelectItem key={grade} value={grade}>{grade}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

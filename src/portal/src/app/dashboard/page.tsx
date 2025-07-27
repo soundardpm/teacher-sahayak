@@ -61,6 +61,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import InteractiveStoryteller from "@/components/features/interactive-storyteller";
 import QuizGenerator from "@/components/features/quiz-generator";
 import ChatAssistant from "@/components/features/chat-assistant";
+import { SUPPORTED_GRADE_LEVELS } from "@/lib/constants";
 
 type Feature =
   | "localize"
@@ -76,6 +77,7 @@ type Feature =
 function Dashboard() {
   const [activeFeature, setActiveFeature] = React.useState<Feature>("localize");
   const [selectedBoard, setSelectedBoard] = React.useState("CBSE");
+  const [selectedGrade, setSelectedGrade] = React.useState<string>("");
   const [isChatOpen, setIsChatOpen] = React.useState(false);
   const followerRef = React.useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
@@ -236,6 +238,20 @@ function Dashboard() {
                           <SelectItem value="State Board">State Board</SelectItem>
                           <SelectItem value="IB">International Baccalaureate</SelectItem>
                           <SelectItem value="Cambridge">Cambridge</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuLabel>Grade/Class</DropdownMenuLabel>
+                    <div className="px-2 py-1">
+                      <Select value={selectedGrade} onValueChange={setSelectedGrade}>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select Grade" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {SUPPORTED_GRADE_LEVELS.map((grade) => (
+                            <SelectItem key={grade} value={grade}>{grade}</SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
