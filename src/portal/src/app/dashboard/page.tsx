@@ -4,7 +4,6 @@ import * as React from "react";
 import Image from "next/image";
 import {
   AudioLines,
-  BrainCircuit,
   CalendarPlus,
   Gamepad2,
   Languages,
@@ -18,13 +17,7 @@ import {
   LogOut,
   HelpCircle,
   Info,
-  BookOpenCheck,
-  GraduationCap,
-  FileText,
   MessageSquare,
-  BarChart3,
-  Users,
-  Bell,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -58,7 +51,6 @@ import { Button } from "@/components/ui/button";
 
 import LocalizedContent from "@/components/features/localized-content";
 import DifferentiatedMaterials from "@/components/features/differentiated-materials";
-import KnowledgeBase from "@/components/features/knowledge-base";
 import VisualAids from "@/components/features/visual-aids";
 import LessonPlanner from "@/components/features/lesson-planner";
 import AudioAssessment from "@/components/features/audio-assessment";
@@ -70,28 +62,17 @@ import InteractiveStoryteller from "@/components/features/interactive-storytelle
 import QuizGenerator from "@/components/features/quiz-generator";
 import ChatAssistant from "@/components/features/chat-assistant";
 
-// Draft components for new features from HTML - TO BE IMPLEMENTED
-import ComingSoon from "@/components/features/coming-soon-draft";
-
 type Feature =
   | "chat"
   | "localize"
   | "differentiate"
-  | "knowledge"
   | "visualize"
   | "plan"
   | "assess"
   | "gamify"
   | "explain"
   | "storytell"
-  | "quiz"
-  | "worksheet"
-  | "syllabus"
-  | "grading"
-  | "feedback"
-  | "progress"
-  | "connect"
-  | "reminders";
+  | "quiz";
 
 function Dashboard() {
   const [activeFeature, setActiveFeature] = React.useState<Feature>("chat");
@@ -123,8 +104,6 @@ function Dashboard() {
         return <LocalizedContent />;
       case "differentiate":
         return <DifferentiatedMaterials />;
-      case "knowledge":
-        return <KnowledgeBase />;
       case "visualize":
         return <VisualAids />;
       case "plan":
@@ -139,49 +118,6 @@ function Dashboard() {
         return <InteractiveStoryteller />;
       case "quiz":
         return <QuizGenerator />;
-      // Draft features from HTML
-      case "worksheet":
-        return <ComingSoon 
-          title="Worksheet Generator" 
-          description="Generate multiple versions of worksheets from textbook photos for different grade levels."
-          icon={<FileText className="w-8 h-8 text-primary" />}
-        />;
-      case "syllabus":
-        return <ComingSoon 
-          title="Syllabus Scheduler" 
-          description="Plan and organize your curriculum with intelligent scheduling and progress tracking."
-          icon={<CalendarPlus className="w-8 h-8 text-primary" />}
-        />;
-      case "grading":
-        return <ComingSoon 
-          title="Auto Grading" 
-          description="Automatically grade assignments and provide detailed feedback to students."
-          icon={<GraduationCap className="w-8 h-8 text-primary" />}
-        />;
-      case "feedback":
-        return <ComingSoon 
-          title="Feedback Assistant" 
-          description="Generate personalized feedback for student work and assessments."
-          icon={<MessageSquare className="w-8 h-8 text-primary" />}
-        />;
-      case "progress":
-        return <ComingSoon 
-          title="Student Progress Tracker" 
-          description="Track and analyze student performance with detailed analytics and insights."
-          icon={<BarChart3 className="w-8 h-8 text-primary" />}
-        />;
-      case "connect":
-        return <ComingSoon 
-          title="Teacher Connect" 
-          description="Connect with other teachers, share resources, and collaborate on lesson plans."
-          icon={<Users className="w-8 h-8 text-primary" />}
-        />;
-      case "reminders":
-        return <ComingSoon 
-          title="Reminders & Test Scheduler" 
-          description="Set reminders for important dates and schedule tests and assessments."
-          icon={<Bell className="w-8 h-8 text-primary" />}
-        />;
       default:
         return <ChatAssistant />;
     }
@@ -195,7 +131,6 @@ function Dashboard() {
       icon: UsersRound,
       label: "Differentiated Materials",
     },
-    { id: "knowledge", icon: BrainCircuit, label: "Instant Knowledge Base" },
     { id: "visualize", icon: Paintbrush, label: "Visual Diagrams" },
     { id: "plan", icon: CalendarPlus, label: "Lesson Planner" },
     {
@@ -208,14 +143,6 @@ function Dashboard() {
     { id: "explain", icon: Presentation, label: "Audio-Visual Explanation" },
     { id: "storytell", icon: Rabbit, label: "Interactive Storyteller" },
     { id: "quiz", icon: Rabbit, label: "Quiz Generator" },
-        // New features from HTML (Draft)
-    { id: "worksheet", icon: FileText, label: "Worksheet Generator", isDraft: true },
-    { id: "syllabus", icon: CalendarPlus, label: "Syllabus Scheduler", isDraft: true },
-    { id: "grading", icon: GraduationCap, label: "Auto Grading", isDraft: true },
-    { id: "feedback", icon: MessageSquare, label: "Feedback Assistant", isDraft: true },
-    { id: "progress", icon: BarChart3, label: "Student Progress Tracker", isDraft: true },
-    { id: "connect", icon: Users, label: "Teacher Connect", isDraft: true },
-    { id: "reminders", icon: Bell, label: "Reminders & Test Scheduler", isDraft: true },
   ];
 
   return (
@@ -255,11 +182,6 @@ function Dashboard() {
                         <item.icon className="w-4 h-4 text-primary" />
                       </div>
                       <span className="font-medium">{item.label}</span>
-                      {item.isDraft && (
-                        <span className="ml-auto text-xs bg-orange-100 text-orange-800 px-1.5 py-0.5 rounded-md dark:bg-orange-900 dark:text-orange-200">
-                          Draft
-                        </span>
-                      )}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
