@@ -79,24 +79,7 @@ function Dashboard() {
   const [selectedBoard, setSelectedBoard] = React.useState("CBSE");
   const [selectedGrade, setSelectedGrade] = React.useState<string>("");
   const [isChatOpen, setIsChatOpen] = React.useState(false);
-  const followerRef = React.useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
-
-  React.useEffect(() => {
-    if (isMobile) return;
-
-    const handleMouseMove = (event: MouseEvent) => {
-      if (followerRef.current) {
-        const { clientX, clientY } = event;
-        followerRef.current.style.transform = `translate(${clientX}px, ${clientY}px) translate(-50%, -50%)`;
-      }
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, [isMobile]);
 
   const renderFeature = () => {
     switch (activeFeature) {
@@ -131,7 +114,7 @@ function Dashboard() {
       icon: UsersRound,
       label: "Differentiated Materials",
     },
-    { id: "visualize", icon: Paintbrush, label: "Visual Diagrams" },
+    { id: "visualize", icon: Paintbrush, label: "Content Hub" },
     {
       id: "assess",
       icon: AudioLines,
@@ -146,7 +129,6 @@ function Dashboard() {
 
   return (
     <>
-      {!isMobile && <div ref={followerRef} className="cursor-follower-element" />}
       <SidebarProvider>
         <div className="flex min-h-screen bg-background">
           <Sidebar className="border-r border-border/50">
