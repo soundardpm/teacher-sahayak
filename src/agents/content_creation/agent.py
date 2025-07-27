@@ -31,7 +31,7 @@ MODEL = "gemini-2.5-flash"
 content_creation_coordinator = LlmAgent(
     name="content_creation_coordinator",
     model=MODEL,
-    description=(
+    d=(
         "The ContentCreationCoordinator is the central coordinator in a multi-agent system for creating differentiated "
         "educational materials and localized content. It interprets user inputs, validates them, and initiates downstream "
         "processing by specialized agents. It ensures seamless user interaction and maintains flow integrity. "

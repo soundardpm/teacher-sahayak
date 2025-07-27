@@ -34,8 +34,8 @@ Using the provided textbook page photo, generate multiple versions of a workshee
   - Visual organization suitable for the age group
 
 ### Inputs:
-- `gradeLevels`: List of grade levels to create worksheets for
-- `textbookPagePhotoDataUri`: Photo of a textbook page to base worksheets on
+- gradeLevels: List of grade levels to create worksheets for
+- textbookPagePhotoDataUri: Photo of a textbook page to base worksheets on
 
 ### Output Format:
 For each grade level, provide a complete worksheet with:
@@ -45,7 +45,7 @@ For each grade level, provide a complete worksheet with:
 4. Any necessary diagrams or visual cues described
 
 ### Example Output Structure:
-```
+
 # [Subject] Worksheet for [Grade Level]
 
 ## Instructions
@@ -61,7 +61,7 @@ For each grade level, provide a complete worksheet with:
    [Answer space]
 
 [And so on for 5-8 questions]
-```
+
 
 ### Constraints:
 - Content must be academically sound and educationally valuable

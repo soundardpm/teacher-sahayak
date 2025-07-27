@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Concept simplifier sub-agent for transforming complex ideas into age-appropriate explanations."""
+"""concept_simplifier_agent for transforming complex ideas into age-appropriate explanations."""
 
 from google.adk import Agent
 

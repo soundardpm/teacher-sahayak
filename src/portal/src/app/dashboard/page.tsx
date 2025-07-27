@@ -18,6 +18,7 @@ import {
   HelpCircle,
   Info,
   MessageSquare,
+  BookOpen,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -52,6 +53,7 @@ import { Button } from "@/components/ui/button";
 import LocalizedContent from "@/components/features/localized-content";
 import DifferentiatedMaterials from "@/components/features/differentiated-materials";
 import VisualAids from "@/components/features/visual-aids";
+import ContentHub from "@/components/features/content-hub";
 import LessonPlanner from "@/components/features/lesson-planner";
 import AudioAssessment from "@/components/features/audio-assessment";
 import GameGeneration from "@/components/features/game-generation";
@@ -67,6 +69,7 @@ type Feature =
   | "localize"
   | "differentiate"
   | "visualize"
+  | "contenthub"
   | "plan"
   | "assess"
   | "gamify"
@@ -75,7 +78,7 @@ type Feature =
   | "quiz";
 
 function Dashboard() {
-  const [activeFeature, setActiveFeature] = React.useState<Feature>("plan");
+  const [activeFeature, setActiveFeature] = React.useState<Feature>("contenthub");
   const [selectedBoard, setSelectedBoard] = React.useState("CBSE");
   const [selectedGrade, setSelectedGrade] = React.useState<string>("");
   const [isChatOpen, setIsChatOpen] = React.useState(false);
@@ -89,6 +92,8 @@ function Dashboard() {
         return <DifferentiatedMaterials />;
       case "visualize":
         return <VisualAids />;
+      case "contenthub":
+        return <ContentHub />;
       case "plan":
         return <LessonPlanner />;
       case "assess":
@@ -108,7 +113,8 @@ function Dashboard() {
 
   const menuItems = [
     { id: "plan", icon: CalendarPlus, label: "Lesson Planner" },
-    { id: "visualize", icon: Paintbrush, label: "Content Hub" },
+    { id: "contenthub", icon: BookOpen, label: "Content Hub" },
+    { id: "visualize", icon: Paintbrush, label: "Visual Aids" },
     { id: "localize", icon: Languages, label: "Localized Content" },
     {
       id: "differentiate",

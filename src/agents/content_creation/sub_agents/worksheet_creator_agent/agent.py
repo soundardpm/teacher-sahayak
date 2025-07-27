@@ -28,7 +28,7 @@ worksheet_creator_agent = Agent(
         "The WorksheetCreatorAgent generates differentiated worksheets based on textbook pages. "
         "It analyzes the content, identifies key concepts, and creates engaging exercises tailored to various learning levels. "
         "This agent is designed to assist educators in creating customized worksheets that enhance student understanding and retention."
-    ),    
+    ),
     instruction=prompt.WORKSHEET_CREATOR_PROMPT,
     tools=[google_search],
 )

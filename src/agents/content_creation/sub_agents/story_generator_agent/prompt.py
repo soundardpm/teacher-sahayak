@@ -31,10 +31,10 @@ Create engaging, culturally relevant stories in the specified regional language 
 - Include a brief introduction and follow-up questions in the same language
 
 ### Inputs:
-- `topic`: The educational concept to be illustrated
-- `gradeLevel`: Target student age/grade level
-- `regionalLanguage`: The specific regional language to write in
-- `culturalContext`: Brief information about the regional cultural context
+- topic: The educational concept to be illustrated
+- gradeLevel: Target student age/grade level
+- regionalLanguage: The specific regional language to write in
+- culturalContext: Brief information about the regional cultural context
 
 ### Output Format:
 Provide a complete story with:
@@ -44,7 +44,7 @@ Provide a complete story with:
 4. A brief teacher note explaining how the story connects to the curriculum
 
 ### Example Output Structure:
-```
+
 # [Title in Regional Language]
 
 [Story text in the regional language]
@@ -56,7 +56,7 @@ Provide a complete story with:
 
 ## Teacher Note
 [Brief explanation in regional language of how the story connects to curriculum]
-```
+
 
 ### Constraints:
 - The story must accurately illustrate the educational concept

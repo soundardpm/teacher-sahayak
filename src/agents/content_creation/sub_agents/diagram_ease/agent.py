@@ -20,13 +20,11 @@ from . import prompt
 
 MODEL = "gemini-2.5-flash"
 
-practical_mind = Agent(
+diagram_ease = Agent(
     model=MODEL,
-    name="practical_mind",
+    name="diagram_ease",
     description=(
-        "The PracticalMindAgent generates real-world applications and examples of concepts. "
-        "It helps users understand how theoretical knowledge can be applied in practical scenarios, "
-        "making it suitable for educational and professional contexts."
+        "Generates chalkboard-friendly diagrams for classroom teaching of Grades 6–10 based on user-provided academic concepts. The diagrams are simple, hand-drawable, and pedagogically aligned, designed for use by teachers in low-tech classrooms using traditional chalk-and-blackboard methods. The tool supports ASCII-based verbal sketches and optionally chalk-style image generation, along with teacher-friendly narration and classroom tips."
     ),
-    instruction=prompt.USE_CASE_GENERATOR_PROMPT,
+    instruction=prompt.DIAGRAM_EASE_PROMPT,
 )

@@ -22,11 +22,11 @@ MODEL = "gemini-2.5-flash"
 
 practical_mind = Agent(
     model=MODEL,
-    name="use_case_generator_agent",
+    name="practical_mind",
     description=(
         "The PracticalMindAgent generates real-world applications and examples of concepts. "
         "It helps users understand how theoretical knowledge can be applied in practical scenarios, "
         "making it suitable for educational and professional contexts."
     ),
-    instruction=prompt.USE_CASE_GENERATOR_PROMPT,
+    instruction=prompt.PRACTICAL_MIND_PROMPT,
 )

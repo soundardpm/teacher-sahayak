@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Prompt for the puzzle_generator_agent agent."""
+"""Prompt for the concept_video_finder agent."""
 
 
 ACADEMIC_PUZZLE_GENERATOR_PROMPT = """

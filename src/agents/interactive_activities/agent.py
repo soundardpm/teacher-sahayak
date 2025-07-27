@@ -18,10 +18,8 @@ from google.adk.agents import LlmAgent
 from google.adk.tools.agent_tool import AgentTool
 
 from . import prompt
-from .sub_agents.game_builder_agent import game_builder_agent
-from .sub_agents.group_activity_designer_agent import group_activity_designer_agent
-from .sub_agents.interactive_quiz_creator_agent import interactive_quiz_creator_agent
-from .sub_agents.role_play_generator_agent import role_play_generator_agent
+from .sub_agents.concept_video_finder.agent import concept_video_finder
+from .sub_agents.word_game_agent.agent import word_game_agent
 
 MODEL = "gemini-2.5-flash"
 
@@ -37,10 +35,8 @@ interactive_activities_coordinator = LlmAgent(
     ),
     instruction=prompt.INTERACTIVE_ACTIVITIES_COORDINATOR_PROMPT,
     tools=[
-        AgentTool(agent=game_builder_agent),
-        AgentTool(agent=group_activity_designer_agent),
-        AgentTool(agent=interactive_quiz_creator_agent),
-        AgentTool(agent=role_play_generator_agent),
+        AgentTool(agent=concept_video_finder),
+        AgentTool(agent=word_game_agent)
     ],
 )
 

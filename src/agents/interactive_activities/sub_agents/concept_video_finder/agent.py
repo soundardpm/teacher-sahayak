@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""puzzle_generator_agent for generating puzzles based on academic topics."""
+"""concept_video_finder for generating puzzles based on academic topics."""
 
 from google.adk import Agent
 from google.adk.tools import google_search
@@ -21,14 +21,14 @@ from . import prompt
 
 MODEL = "gemini-2.5-flash"
 
-puzzle_generator_agent = Agent(
+concept_video_finder = Agent(
     model=MODEL,
-    name="puzzle_generator_agent",
+    name="concept_video_finder",
     description=(
         "An expert puzzle creator for students in Grades 6-10. "
         "Creates educational puzzles based on provided topics and returns clean HTML content."
     ),
-    instruction=prompt.ACADEMIC_QUIZ_GENERATOR_PROMPT,
+    instruction=prompt.CONCEPT_VIDEO_FINDER_AGENT,
     tools=[google_search],
 )
 
