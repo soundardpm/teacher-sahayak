@@ -38,6 +38,7 @@ import {
   generateAudioVisualExplanation,
   type GenerateAudioVisualExplanationOutput,
 } from "@/ai/flows/generate-audio-visual-explanation";
+import { SUPPORTED_LANGUAGES } from "@/lib/constants";
 
 const formSchema = z.object({
   topic: z.string().min(3, "Topic must be at least 3 characters."),
@@ -126,17 +127,11 @@ export default function AudioVisualExplanation() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="English">English</SelectItem>
-                        <SelectItem value="Hindi">Hindi</SelectItem>
-                        <SelectItem value="Bengali">Bengali</SelectItem>
-                        <SelectItem value="Marathi">Marathi</SelectItem>
-                        <SelectItem value="Telugu">Telugu</SelectItem>
-                        <SelectItem value="Tamil">Tamil</SelectItem>
-                        <SelectItem value="Gujarati">Gujarati</SelectItem>
-                        <SelectItem value="Urdu">Urdu</SelectItem>
-                        <SelectItem value="Kannada">Kannada</SelectItem>
-                        <SelectItem value="Odia">Odia</SelectItem>
-                        <SelectItem value="Malayalam">Malayalam</SelectItem>
+                        {SUPPORTED_LANGUAGES.map((language) => (
+                          <SelectItem key={language} value={language}>
+                            {language}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />

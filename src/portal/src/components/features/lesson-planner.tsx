@@ -14,6 +14,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
+import { SUPPORTED_LANGUAGES } from "@/lib/constants";
 
 // Define APP_URL with localhost as default
 const APP_URL = "http://localhost:8000";
@@ -64,17 +65,7 @@ export default function LessonPlanner() {
     "Grade 7", "Grade 8", "Grade 9", "Grade 10", "Grade 11", "Grade 12"
   ];
 
-  const languages = [
-    "English",
-    "Tamil",
-    "Hindi",
-    "Telugu",
-    "Kannada",
-    "Malayalam",
-    "Bengali",
-    "Marathi",
-    "Gujarati",
-  ];
+  const languages = SUPPORTED_LANGUAGES;
 
   const handleInputChange = (name: string, value: string) => {
     // This function is no longer needed with individual state variables

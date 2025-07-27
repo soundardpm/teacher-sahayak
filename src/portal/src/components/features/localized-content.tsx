@@ -34,6 +34,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Loader } from "@/components/ui/loader";
 import { generateLocalContent } from "@/ai/flows/generate-local-content";
+import { SUPPORTED_LANGUAGES } from "@/lib/constants";
 
 const formSchema = z.object({
   prompt: z
@@ -124,17 +125,11 @@ export default function LocalizedContent() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="English">English</SelectItem>
-                        <SelectItem value="Hindi">Hindi</SelectItem>
-                        <SelectItem value="Bengali">Bengali</SelectItem>
-                        <SelectItem value="Marathi">Marathi</SelectItem>
-                        <SelectItem value="Telugu">Telugu</SelectItem>
-                        <SelectItem value="Tamil">Tamil</SelectItem>
-                        <SelectItem value="Gujarati">Gujarati</SelectItem>
-                        <SelectItem value="Urdu">Urdu</SelectItem>
-                        <SelectItem value="Kannada">Kannada</SelectItem>
-                        <SelectItem value="Odia">Odia</SelectItem>
-                        <SelectItem value="Malayalam">Malayalam</SelectItem>
+                        {SUPPORTED_LANGUAGES.map((language) => (
+                          <SelectItem key={language} value={language}>
+                            {language}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
