@@ -63,7 +63,6 @@ import QuizGenerator from "@/components/features/quiz-generator";
 import ChatAssistant from "@/components/features/chat-assistant";
 
 type Feature =
-  | "chat"
   | "localize"
   | "differentiate"
   | "visualize"
@@ -75,8 +74,9 @@ type Feature =
   | "quiz";
 
 function Dashboard() {
-  const [activeFeature, setActiveFeature] = React.useState<Feature>("chat");
+  const [activeFeature, setActiveFeature] = React.useState<Feature>("localize");
   const [selectedBoard, setSelectedBoard] = React.useState("CBSE");
+  const [isChatOpen, setIsChatOpen] = React.useState(false);
   const followerRef = React.useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
 
@@ -98,8 +98,6 @@ function Dashboard() {
 
   const renderFeature = () => {
     switch (activeFeature) {
-      case "chat":
-        return <ChatAssistant />;
       case "localize":
         return <LocalizedContent />;
       case "differentiate":
@@ -119,12 +117,11 @@ function Dashboard() {
       case "quiz":
         return <QuizGenerator />;
       default:
-        return <ChatAssistant />;
+        return <LocalizedContent />;
     }
   };
 
   const menuItems = [
-    { id: "chat", icon: MessageSquare, label: "Chat Assistant" },
     { id: "localize", icon: Languages, label: "Localized Content" },
     {
       id: "differentiate",
@@ -205,12 +202,17 @@ function Dashboard() {
                 <SidebarTrigger className="md:hidden">
                   <PanelLeft />
                 </SidebarTrigger>
-                <div className="hidden md:block">
-                  <h1 className="text-xl font-semibold text-foreground">Sahayak AI</h1>
-                </div>
               </div>
               
               <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  onClick={() => setIsChatOpen(true)}
+                  className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center hover:bg-primary/20 transition duration-200"
+                  title="Chat Assistant"
+                >
+                  <MessageSquare className="w-5 h-5 text-primary" />
+                </Button>
                 <ThemeToggle />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -260,6 +262,38 @@ function Dashboard() {
             </main>
           </SidebarInset>
         </div>
+        
+        {/* Full-screen Chat Modal */}
+        {isChatOpen && (
+          <div className="fixed inset-0 z-50 bg-background">
+            <div className="flex h-full flex-col">
+              <header className="flex items-center justify-between p-4 border-b border-border/50 bg-card/30 backdrop-blur">
+                <div className="flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5 text-primary" />
+                  <h1 className="text-xl font-semibold text-foreground">Chat Assistant</h1>
+                </div>
+                <Button
+                  variant="ghost"
+                  onClick={() => setIsChatOpen(false)}
+                  className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-muted/50 transition duration-200"
+                  title="Close Chat"
+                >
+                  <svg 
+                    className="w-5 h-5" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </Button>
+              </header>
+              <div className="flex-1 p-4 md:p-6 lg:p-8 bg-background/50">
+                <ChatAssistant />
+              </div>
+            </div>
+          </div>
+        )}
       </SidebarProvider>
     </>
   );

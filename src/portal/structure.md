@@ -59,7 +59,7 @@ This is the heart of the AI functionality, powered by Genkit.
     -   `generate-audio-visual-explanation.ts`: Produces a script, audio narration, and visual aid for a topic.
     -   `generate-local-content.ts`: Creates text content in a specified local language.
     -   `instant-knowledge-base.ts`: Answers a question with a simple explanation.
-    -   `interactive-storyteller.ts`: Generates a full story with character voices and illustrations.
+    -   `storygen.ts`: Generates a full story with character voices and illustrations.
     -   `reading-assessment.ts`: Transcribes and assesses a student's reading audio.
 
 ### `src/components/`
