@@ -75,7 +75,7 @@ type Feature =
   | "quiz";
 
 function Dashboard() {
-  const [activeFeature, setActiveFeature] = React.useState<Feature>("localize");
+  const [activeFeature, setActiveFeature] = React.useState<Feature>("plan");
   const [selectedBoard, setSelectedBoard] = React.useState("CBSE");
   const [selectedGrade, setSelectedGrade] = React.useState<string>("");
   const [isChatOpen, setIsChatOpen] = React.useState(false);
